@@ -41,7 +41,23 @@ app.post("/api/predict", async (req, res) => {
     );
 
     const result = await response.json();
-    res.json(result);
+
+console.log("Roboflow raw result:", JSON.stringify(result, null, 2));
+
+const message =
+  result?.outputs?.[0]?.message ||
+  result?.results?.[0]?.outputs?.[0]?.message ||
+  result?.results?.[0]?.output?.message ||
+  result?.output?.message ||
+  result?.[0]?.message ||
+  result?.message ||
+  result?.outputs?.message;
+
+res.json({
+  message: message || "No waste management message was returned.",
+  raw: result
+});
+
   } catch (error) {
     console.error("Prediction error:", error);
     res.status(500).json({ error: "Prediction failed" });
